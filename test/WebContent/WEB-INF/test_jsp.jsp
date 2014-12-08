@@ -25,8 +25,57 @@
 			avec une balise jsp : <jsp:getProperty property="prenom" name="coyote"/>
 		</p>
 		<p>
-			avec une balise EL : ${coyote.prenom}
+			avec une balise EL : ${coyote.getPrenom()}
 		</p>
+		<p>
+			Le prenom de coyote est il vide ? ${empty coyote.getPrenom() ? "oui" : "mais non !"}
+		</p>
+		
+		<%-- les collections --%>
+		
+		<%-- List --%>
+		<%
+			java.util.List<String> legumes = new java.util.ArrayList<String>();
+			legumes.add("poireau");
+			legumes.add("haricot");
+			legumes.add("carotte");
+			legumes.add("patate");
+			request.setAttribute("legumes", legumes);
+		%>
+		
+		<p>
+			Pour accéder à un élément :
+			<ul>
+				<li>${legumes.get(0)}</li>
+				<li>${legumes[1]}</li>
+				<li>${legumes['2']}</li>
+				<li>${legumes["3"]}</li>
+			</ul>
+		</p>
+		
+		<%-- Map --%>
+		<%
+			java.util.Map<String, Integer> desserts = new java.util.HashMap<String, Integer>();
+			desserts.put("cookies", 8);
+			desserts.put("glaces", 3);
+			desserts.put("muffins", 6);
+			desserts.put("tartes aux pommes", 2);
+			request.setAttribute("desserts", desserts);
+		%>
+		
+		<p>
+			Pour accéder à un élément :
+			<ul>
+				<li>${desserts.cookies}</li>
+				<li>${desserts.get("glaces")}</li>
+				<li>${desserts['muffins']}</li>
+				<li>${desserts["tartes aux pommes"]}</li>
+			</ul>
+		</p>
+		
+		<%-- Les objets implcites --%>
+		
+		
 		
 	</body>
 </html>
