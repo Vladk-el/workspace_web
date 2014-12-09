@@ -32,5 +32,16 @@
 		<servlet-name>TestJSP</servlet-name>
 		<url-pattern>/test_jsp</url-pattern>
 	</servlet-mapping>
+	
+	<!-- Problème de vue -->
+	<servlet>
+		<servlet-name>ProblemeDeVue</servlet-name>
+		<servlet-class>com.sdzee.servlets.ProblemeDeVue</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>ProblemeDeVue</servlet-name>
+		<url-pattern>/problemeDeVue</url-pattern>
+	</servlet-mapping>
 
 </web-app>

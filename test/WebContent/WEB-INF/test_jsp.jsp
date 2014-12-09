@@ -73,8 +73,15 @@
 			</ul>
 		</p>
 		
-		<%-- Les objets implcites --%>
+		<%-- Les objets implicites --%>
+		<%-- Paramètres --%>
 		
+		<p>
+			paramètre nom : ${param.nom}
+		</p>
+		<p>
+			paramètre avec plusieurs nom : ${paramValues.nom[0]}, ${paramValues.nom[1]}, ${paramValues.nom[2]}
+		</p>
 		
 		
 	</body>
