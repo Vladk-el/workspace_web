@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	version="3.0">
+
+	<!-- intro -->
+	<servlet>
+		<servlet-name>FilesUpload</servlet-name>
+		<servlet-class>com.vladkel.files.upload.FilesUpload</servlet-class>
+		<init-param>
+			<param-name>auteur</param-name>
+			<param-value>Vladk</param-value>
+		</init-param>
+		
+		<init-param>
+			<param-name>path</param-name>
+			<param-value>/Users\Eliott\Downloads/</param-value>
+		</init-param>
+		
+		<multipart-config>
+			<location>C:\Users\Eliott\Downloads</location>
+			<max-file-size>10485760</max-file-size> <!-- 10 Mo -->
+			<max-request-size>52428800</max-request-size> <!-- 5 x 10 Mo -->
+			<file-size-threshold>1048576</file-size-threshold> <!-- 1 Mo -->
+		</multipart-config>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>FilesUpload</servlet-name>
+		<url-pattern>/upload</url-pattern>
+	</servlet-mapping>
+
+</web-app>
