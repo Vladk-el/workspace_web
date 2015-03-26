@@ -1,5 +1,7 @@
 package com.vladkel.help.parebrise.ws.model.intervention;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -19,6 +21,10 @@ public class DocumentIntervention {
 
 	public void setInterventions(Interventions interventions) {
 		this.interventions = interventions;
+	}
+	
+	public void setInterventions(List<Intervention> interventions) {
+		this.interventions.setInterventions(interventions);
 	}
 	
 	public void addIntervention(Intervention intervention){

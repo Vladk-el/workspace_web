@@ -1,5 +1,7 @@
 package com.vladkel.help.parebrise.ws.xml.service;
 
+import java.util.List;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -27,8 +29,16 @@ public class InterventionService {
 		DocumentIntervention document = new DocumentIntervention();
 		Intervention intervention = orm.getIntervention(id);
 		document.addIntervention(intervention);
-		document.addIntervention(intervention);
-		document.addIntervention(intervention);
+		return document;
+	}
+	
+	@GET
+	@Path("/get/all")
+	@Produces("application/xml")
+	public DocumentIntervention getInterventions(){
+		DocumentIntervention document = new DocumentIntervention();
+		List<Intervention> interventions = orm.getInterventions();
+		document.setInterventions(interventions);
 		return document;
 	}
 	

@@ -10,11 +10,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Interventions {
 
 	private List<Intervention> interventions;
-	
-	public Interventions(){
+
+	public Interventions() {
 		interventions = new ArrayList<Intervention>();
 	}
-	
+
 	@XmlElement(name = "intervention")
 	public List<Intervention> getInterventions() {
 		return interventions;
@@ -23,9 +23,9 @@ public class Interventions {
 	public void setInterventions(List<Intervention> interventions) {
 		this.interventions = interventions;
 	}
-	
-	public void addIntervention(Intervention intervention){
+
+	public void addIntervention(Intervention intervention) {
 		interventions.add(intervention);
 	}
-	
+
 }

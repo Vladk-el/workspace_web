@@ -1,5 +1,7 @@
 package com.vladkel.help.parebrise.ws.persistance;
 
+import java.util.List;
+
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
@@ -57,5 +59,23 @@ public class InterventionORM {
 		
 		sessionFactory.close();
 		return intervention;
+	}
+	
+	public List<Intervention> getInterventions(){
+		ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(global.getProperties()).build();
+		SessionFactory sessionFactory = config.buildSessionFactory(serviceRegistry);
+		Session session = sessionFactory.openSession();
+		List<Intervention> interventions = null;
+		
+		try{
+			interventions = session.createCriteria(Intervention.class).list();
+		} catch(Exception e) {
+			log.error("Error on GET INTERVENTIONS : ", e);
+		} finally {
+			session.close();
+		}
+		
+		sessionFactory.close();
+		return interventions;
 	}
 }
