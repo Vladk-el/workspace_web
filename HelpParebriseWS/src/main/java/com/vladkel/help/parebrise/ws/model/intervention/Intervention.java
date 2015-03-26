@@ -1,4 +1,4 @@
-package com.vladkel.help.parebrise.ws.model;
+package com.vladkel.help.parebrise.ws.model.intervention;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -6,53 +6,55 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "intervention")
 public class Intervention {
 
-	private int indice_intervention;
-	private int indice_client;
-	private int indice_vehicule;
+	private Integer indice_intervention;
+	private Integer indice_client;
+	private Integer indice_vehicule;
 	private String date_intervention;
 	private String date_facture;
 	private String numero_facture;
 	private Double prix_HT;
 	private Double prix_TTC;
-	private int id_tva;
+	private Integer id_tva;
 	private Double acompte;
 	private Double remise;
 	private Double franchise;
-	private int indice_prestation;
-	private int indice_mode_paiement;
+	private Integer indice_prestation;
+	private Integer indice_mode_paiement;
 	private String date_sinistre;
 	private String cause_sinistre;
 	private String adresse_intervention;
 	private String bon_de_commande;
 	private String date_echeance;
-	private int indice_contact;
+	private Integer indice_contact;
 	private String assurance_impression;
 	
 	
+	public Intervention(){}
+	
 	@XmlElement
-	public int getIndice_intervention() {
+	public Integer getIndice_intervention() {
 		return indice_intervention;
 	}
 	
-	public void setIndice_intervention(int indice_intervention) {
+	public void setIndice_intervention(Integer indice_intervention) {
 		this.indice_intervention = indice_intervention;
 	}
 	
 	@XmlElement
-	public int getIndice_client() {
+	public Integer getIndice_client() {
 		return indice_client;
 	}
 	
-	public void setIndice_client(int indice_client) {
+	public void setIndice_client(Integer indice_client) {
 		this.indice_client = indice_client;
 	}
 	
 	@XmlElement
-	public int getIndice_vehicule() {
+	public Integer getIndice_vehicule() {
 		return indice_vehicule;
 	}
 	
-	public void setIndice_vehicule(int indice_vehicule) {
+	public void setIndice_vehicule(Integer indice_vehicule) {
 		this.indice_vehicule = indice_vehicule;
 	}
 	
@@ -102,11 +104,11 @@ public class Intervention {
 	}
 	
 	@XmlElement
-	public int getId_tva() {
+	public Integer getId_tva() {
 		return id_tva;
 	}
 	
-	public void setId_tva(int id_tva) {
+	public void setId_tva(Integer id_tva) {
 		this.id_tva = id_tva;
 	}
 	
@@ -138,20 +140,20 @@ public class Intervention {
 	}
 	
 	@XmlElement
-	public int getIndice_prestation() {
+	public Integer getIndice_prestation() {
 		return indice_prestation;
 	}
 	
-	public void setIndice_prestation(int indice_prestation) {
+	public void setIndice_prestation(Integer indice_prestation) {
 		this.indice_prestation = indice_prestation;
 	}
 	
 	@XmlElement
-	public int getIndice_mode_paiement() {
+	public Integer getIndice_mode_paiement() {
 		return indice_mode_paiement;
 	}
 	
-	public void setIndice_mode_paiement(int indice_mode_paiement) {
+	public void setIndice_mode_paiement(Integer indice_mode_paiement) {
 		this.indice_mode_paiement = indice_mode_paiement;
 	}
 	
@@ -201,11 +203,11 @@ public class Intervention {
 	}
 	
 	@XmlElement
-	public int getIndice_contact() {
+	public Integer getIndice_contact() {
 		return indice_contact;
 	}
 	
-	public void setIndice_contact(int indice_contact) {
+	public void setIndice_contact(Integer indice_contact) {
 		this.indice_contact = indice_contact;
 	}
 	
@@ -216,6 +218,33 @@ public class Intervention {
 	
 	public void setAssurance_impression(String assurance_impression) {
 		this.assurance_impression = assurance_impression;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Intervention n° : " + indice_intervention + "\n");
+		sb.append("\t" + indice_client + "\n");
+		sb.append("\t" + indice_vehicule + "\n");
+		sb.append("\t" + date_intervention + "\n");
+		sb.append("\t" + date_facture + "\n");
+		sb.append("\t" + numero_facture + "\n");
+		sb.append("\t" + prix_HT + "\n");
+		sb.append("\t" + prix_TTC + "\n");
+		sb.append("\t" + id_tva + "\n");
+		sb.append("\t" + acompte + "\n");
+		sb.append("\t" + remise + "\n");
+		sb.append("\t" + franchise + "\n");
+		sb.append("\t" + indice_prestation + "\n");
+		sb.append("\t" + indice_mode_paiement + "\n");
+		sb.append("\t" + date_sinistre + "\n");
+		sb.append("\t" + cause_sinistre + "\n");
+		sb.append("\t" + adresse_intervention + "\n");
+		sb.append("\t" + bon_de_commande + "\n");
+		sb.append("\t" + date_echeance + "\n");
+		sb.append("\t" + indice_contact + "\n");
+		sb.append("\t" + assurance_impression + "\n");
+		return sb.toString();
 	}
 	
 	
