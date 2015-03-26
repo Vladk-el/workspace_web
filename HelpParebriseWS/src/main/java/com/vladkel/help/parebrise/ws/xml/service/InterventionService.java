@@ -3,10 +3,13 @@ package com.vladkel.help.parebrise.ws.xml.service;
 import java.util.List;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 
+import org.jboss.resteasy.annotations.Form;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,8 +45,32 @@ public class InterventionService {
 		return document;
 	}
 	
+	@POST
+	@Path("/set/add")
+	public void addIntervention(@Form Intervention intervention){
+		log.info(intervention.toString());
+		if(orm.addIntervention(intervention))
+			log.info("Intervention with id " + intervention.getIndice_intervention() + " added");
+	}
 	
-	@GET
+	@POST
+	@Path("/set/update")
+	public void updateIntervention(@Form Intervention intervention){
+		log.info(intervention.toString());
+		if(orm.updateIntervention(intervention))
+			log.info("Intervention with id " + intervention.getIndice_intervention() + " updated");
+	}
+	
+	@POST
+	@Path("/set/are/you/sure/that/you/really/want/to/remove/this/intervention")
+	public void removeIntervention(@PathParam("id") final int id){
+		log.info("Intervention to remove : " + id);
+		if(orm.removeIntervention(id))
+			log.info("Intervention with id " + id + " removed");
+	}
+	
+	
+	@POST
 	@Path("/getInter/{id}")
 	@Produces("application/xml")
 	public Intervention getInterventionSimple(@PathParam("id") final int id){

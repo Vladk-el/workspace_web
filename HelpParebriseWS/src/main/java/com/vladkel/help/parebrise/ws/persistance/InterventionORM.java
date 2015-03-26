@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.Hibernate;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
@@ -50,7 +52,7 @@ public class InterventionORM {
 			intervention = InitializeAndUnproxy.initializeAndUnproxy(
 							(Intervention) session.load(Intervention.class, new Integer(id))
 						   );
-			log.info("GET intervention n° ", intervention.getIndice_intervention());
+			log.info("GET intervention with id " + intervention.getIndice_intervention());
 		} catch(Exception e) {
 			log.error("Error on GET INTERVENTION : ", e);
 		} finally {
@@ -77,5 +79,82 @@ public class InterventionORM {
 		
 		sessionFactory.close();
 		return interventions;
+	}
+	
+	public boolean addIntervention(Intervention intervention){
+		ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(global.getProperties()).build();
+		SessionFactory sessionFactory = config.buildSessionFactory(serviceRegistry);
+		Session session = sessionFactory.openSession();
+		Transaction transaction = null;
+		
+		try {
+			transaction = session.beginTransaction();
+			session.save(intervention);
+			session.flush();
+			transaction.commit();
+			return true;
+		} catch (Exception e) {
+			if(transaction != null){
+				transaction.rollback();
+			}
+			log.error("Error on ADD INTERVENTION : ", e);
+		} finally {
+			session.close();
+		}
+		
+		sessionFactory.close();
+		return false;
+	}
+	
+	public boolean updateIntervention(Intervention intervention){
+		ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(global.getProperties()).build();
+		SessionFactory sessionFactory = config.buildSessionFactory(serviceRegistry);
+		Session session = sessionFactory.openSession();
+		Transaction transaction = null;
+		
+		try {
+			transaction = session.beginTransaction();
+			session.update(intervention);
+			session.flush();
+			transaction.commit();
+			return true;
+		} catch (Exception e) {
+			if(transaction != null){
+				transaction.rollback();
+			}
+			log.error("Error on UPDATE INTERVENTION : ", e);
+		} finally {
+			session.close();
+		}
+		
+		sessionFactory.close();
+		return false;
+	}
+	
+	public boolean removeIntervention(int id){
+		ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(global.getProperties()).build();
+		SessionFactory sessionFactory = config.buildSessionFactory(serviceRegistry);
+		Session session = sessionFactory.openSession();
+		Transaction transaction = null;
+		
+		try {
+			transaction = session.beginTransaction();
+			Query query = session.createQuery("from intervention i where i.indice_intervention = :id");
+			query.setInteger("id", id);
+			session.delete(query);
+			session.flush();
+			transaction.commit();
+			return true;
+		} catch (Exception e) {
+			if(transaction != null){
+				transaction.rollback();
+			}
+			log.error("Error on UPDATE INTERVENTION : ", e);
+		} finally {
+			session.close();
+		}
+		
+		sessionFactory.close();
+		return false;
 	}
 }

@@ -1,5 +1,8 @@
 package com.vladkel.help.parebrise.ws.model.intervention;
 
+import javax.ws.rs.FormParam;
+import javax.ws.rs.MatrixParam;
+import javax.ws.rs.QueryParam;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -14,27 +17,69 @@ import javax.xml.bind.annotation.XmlType;
 		"assurance_impression" })
 public class Intervention {
 
+	@FormParam("indice_intervention")
 	private Integer indice_intervention;
+	
+	@FormParam("indice_client")
 	private Integer indice_client;
+
+	@FormParam("indice_vehicule")
 	private Integer indice_vehicule;
+
+	@FormParam("date_intervention")
 	private String date_intervention;
+
+	@FormParam("date_facture")
 	private String date_facture;
+
+	@FormParam("numero_facture")
 	private String numero_facture;
+
+	@FormParam("prix_HT")
 	private Double prix_HT;
+
+	@FormParam("prix_TTC")
 	private Double prix_TTC;
+
+	@FormParam("id_tva")
 	private Integer id_tva;
+
+	@FormParam("acompte")
 	private Double acompte;
+
+	@FormParam("remise")
 	private Double remise;
+
+	@FormParam("franchise")
 	private Double franchise;
+
+	@FormParam("indice_prestation")
 	private Integer indice_prestation;
+
+	@FormParam("indice_mode_paiement")
 	private Integer indice_mode_paiement;
+
+	@FormParam("date_sinistre")
 	private String date_sinistre;
+
+	@FormParam("cause_sinistre")
 	private String cause_sinistre;
+
+	@FormParam("adresse_intervention")
 	private String adresse_intervention;
+
+	@FormParam("bon_de_commande")
 	private String bon_de_commande;
+
+	@FormParam("date_echeance")
 	private String date_echeance;
+
+	@FormParam("indice_contact")
 	private Integer indice_contact;
+
+	@FormParam("assurance_impression")
 	private String assurance_impression;
+	
 
 	public Intervention() {
 	}
