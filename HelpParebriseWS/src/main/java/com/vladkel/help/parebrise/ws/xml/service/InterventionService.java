@@ -7,7 +7,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 
 import org.jboss.resteasy.annotations.Form;
 import org.slf4j.Logger;
@@ -15,14 +14,14 @@ import org.slf4j.LoggerFactory;
 
 import com.vladkel.help.parebrise.ws.model.intervention.DocumentIntervention;
 import com.vladkel.help.parebrise.ws.model.intervention.Intervention;
-import com.vladkel.help.parebrise.ws.persistance.InterventionORM;
+import com.vladkel.help.parebrise.ws.persistance.ORMIntervention;
 
 @Path("/intervention")
 public class InterventionService {
 	
 	private static final Logger log = LoggerFactory.getLogger(InterventionService.class);
 	
-	private InterventionORM orm = new InterventionORM();
+	private ORMIntervention orm = new ORMIntervention();
 
 	
 	@GET
@@ -30,7 +29,7 @@ public class InterventionService {
 	@Produces("application/xml")
 	public DocumentIntervention getIntervention(@PathParam("id") final int id){
 		DocumentIntervention document = new DocumentIntervention();
-		Intervention intervention = orm.getIntervention(id);
+		Intervention intervention = orm.get(id);
 		document.addIntervention(intervention);
 		return document;
 	}
@@ -40,7 +39,7 @@ public class InterventionService {
 	@Produces("application/xml")
 	public DocumentIntervention getInterventions(){
 		DocumentIntervention document = new DocumentIntervention();
-		List<Intervention> interventions = orm.getInterventions();
+		List<Intervention> interventions = orm.getAll();
 		document.setInterventions(interventions);
 		return document;
 	}
@@ -49,7 +48,7 @@ public class InterventionService {
 	@Path("/set/add")
 	public void addIntervention(@Form Intervention intervention){
 		log.info(intervention.toString());
-		if(orm.addIntervention(intervention))
+		if(orm.add(intervention))
 			log.info("Intervention with id " + intervention.getIndice_intervention() + " added");
 	}
 	
@@ -57,15 +56,15 @@ public class InterventionService {
 	@Path("/set/update")
 	public void updateIntervention(@Form Intervention intervention){
 		log.info(intervention.toString());
-		if(orm.updateIntervention(intervention))
+		if(orm.update(intervention))
 			log.info("Intervention with id " + intervention.getIndice_intervention() + " updated");
 	}
 	
 	@POST
-	@Path("/set/are/you/sure/that/you/really/want/to/remove/this/intervention")
+	@Path("/set/are/you/sure/that/you/really/want/to/remove/this/intervention/{id}")
 	public void removeIntervention(@PathParam("id") final int id){
 		log.info("Intervention to remove : " + id);
-		if(orm.removeIntervention(id))
+		if(orm.remove(id))
 			log.info("Intervention with id " + id + " removed");
 	}
 	
@@ -74,7 +73,7 @@ public class InterventionService {
 	@Path("/getInter/{id}")
 	@Produces("application/xml")
 	public Intervention getInterventionSimple(@PathParam("id") final int id){
-		Intervention intervention = orm.getIntervention(id);		
+		Intervention intervention = orm.get(id);		
 		return intervention;
 	}
 		

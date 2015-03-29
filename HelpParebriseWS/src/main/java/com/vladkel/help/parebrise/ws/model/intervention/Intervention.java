@@ -1,12 +1,12 @@
 package com.vladkel.help.parebrise.ws.model.intervention;
 
+import javax.persistence.Entity;
 import javax.ws.rs.FormParam;
-import javax.ws.rs.MatrixParam;
-import javax.ws.rs.QueryParam;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+@Entity(name = "Intervention")
 @XmlRootElement(name = "intervention")
 @XmlType(propOrder = { "indice_intervention", "indice_client",
 		"indice_vehicule", "date_intervention", "date_facture",
