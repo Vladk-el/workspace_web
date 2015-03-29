@@ -3,7 +3,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>HelpParebriseWS</groupId>
 	<artifactId>HelpParebriseWS</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<name>HelpParebriseWS</name>
+	<version>0.1</version>
 	<packaging>war</packaging>
 
 	<properties>
@@ -92,8 +93,32 @@
 
 
 	</dependencies>
+	
+	
+	
+	
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<build.warname>${name}</build.warname>
+			</properties>
+		</profile>
+		<profile>
+			<id>prod</id>
+			<properties>
+				<build.warname>${name}</build.warname>
+			</properties>
+		</profile>
+	</profiles>
+	
+	
 
 	<build>
+		<finalName>${build.warname}</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
