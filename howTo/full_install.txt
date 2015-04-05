@@ -42,8 +42,27 @@ sudo mkdir /home/tomcat7
 sudo chown tomcat7.tomcat7 /home/tomcat7
 sudo chmod -R 640 /home/tomcat7
 
-tomcat multiple instance
-https://madurad.wordpress.com/2014/07/17/installing-and-configuring-multiple-tomcat-server-instances/
+tomcat multiple instance ==> follow :
+	https://madurad.wordpress.com/2014/07/17/installing-and-configuring-multiple-tomcat-server-instances/
+
+with parameters : 
+	tomcat-preprod01 : 
+		8105
+		8181 ==> 8444
+		8109
+
+	tomcat-preprod02 : 
+		8205
+		8282 ==> 8445
+		8209
+
+Load balancing
+Maybe : 
+	https://www.howtoforge.com/haproxy_loadbalancer_debian_etch
+	http://www.bastien-louche.fr/2010/05/configuration-cluster-apache-2-haproxy/
+
+
+
 
 
 
