@@ -36,31 +36,114 @@ sudo apt-get install openjdk-7-jre default-jre default-jre-headless
 # Tomcat 7
 sudo apt-get install tomcat7
 @ disable tomcat7 service
-sudo update-rc.d tomcat7 disable (nor working because "using dependency based boot sequencing" ==> asking Franck)
+	sudo update-rc.d tomcat7 disable (nor working because "using dependency based boot sequencing" ==> asking Franck)
 @ create user directory for tomcat7 user and give him rights
-sudo mkdir /home/tomcat7
-sudo chown tomcat7.tomcat7 /home/tomcat7
-sudo chmod -R 640 /home/tomcat7
+	sudo mkdir /home/tomcat7
+	sudo chown tomcat7.tomcat7 /home/tomcat7
+	sudo chmod -R 640 /home/tomcat7
 
 tomcat multiple instance ==> follow :
 	https://madurad.wordpress.com/2014/07/17/installing-and-configuring-multiple-tomcat-server-instances/
+==>
 
-with parameters : 
-	tomcat-preprod01 : 
-		8105
-		8181 ==> 8444
-		8109
+@ create directories 
+	cd /var/lib/
+	sudo mkdir tomcat7-preprod01
+	sudo mkdir tomcat7-preprod02
+	cd /var/lib/tomcat7-preprod01/
+	mkdir mkdir conf temp webapps work logs
+	cd /var/lib/tomcat7-preprod02/
+	mkdir mkdir conf temp webapps work logs
+	cd /var/lib/
+	udo chown -R tomcat7:tomcat7 tomcat7-preprod01 tomcat7-preprod02
 
-	tomcat-preprod02 : 
-		8205
-		8282 ==> 8445
-		8209
+@ add globals confs
+	sudo ln -s /var/lib/tomcat7/conf/catalina.properties /var/lib/tomcat7-preprod01/conf
+	sudo ln -s /var/lib/tomcat7/conf/catalina.properties /var/lib/tomcat7-preprod02/conf
+	sudo ln -s /var/lib/tomcat7/conf/web.xml /var/lib/tomcat7-preprod01/conf
+	sudo ln -s /var/lib/tomcat7/conf/web.xml /var/lib/tomcat7-preprod02/conf
+	sudo ln -s /var/lib/tomcat7/conf/policy.d/ /var/lib/tomcat7-preprod01/conf
+	sudo ln -s /var/lib/tomcat7/conf/policy.d/ /var/lib/tomcat7-preprod02/conf
 
-Load balancing
-Maybe : 
-	https://www.howtoforge.com/haproxy_loadbalancer_debian_etch
-	http://www.bastien-louche.fr/2010/05/configuration-cluster-apache-2-haproxy/
+@ add customs conf
+	sudo cp /var/lib/tomcat7/conf/server.xml /var/lib/tomcat7-preprod01/conf/
+	sudo cp /var/lib/tomcat7/conf/server.xml /var/lib/tomcat7-preprod02/conf/
 
+	@ then modify these ports
+
+		<Server port=”8005″ shutdown=”SHUTDOWN”>
+		<Connector port=”8080″ protocol=”HTTP/1.1″ connectionTimeout=”20000″ URIEncoding=”UTF-8″ redirectPort=”8443″ />
+		<Connector port=”8009″ protocol=”AJP/1.3″ redirectPort=”8443″ />
+
+	@ with parameters : 
+		tomcat-preprod01 : 
+			8105
+			8181 ==> 8444
+			8109
+
+		tomcat-preprod02 : 
+			8205
+			8282 ==> 8445
+			8209
+
+@ add services
+	cd /etc/init.d/
+	sudo cp tomcat7 tomcat7-preprod01
+	sudo cp tomcat7 tomcat7-preprod02
+
+	@ then modify theses lines : ($NAME ==> tomcat-preprod0(1/2))
+		DESC=”Tomcat servlet engine”
+		CATALINA_BASE=/var/lib/$NAME
+		CATALINA_PID=”/var/run/$NAME.pid”
+
+@ update services as startup services
+	sudo update -rc.d tomcat7-preprod01 defaults
+	sudo update -rc.d tomcat7-preprod02 defaults
+
+# Load balancing
+	https://www.debian-administration.org/article/709/Using_the_haproxy_load-balancer_for_increased_availability => THIS ONE
+	(haproxy ==> http://haproxy.debian.net/)
+
+@ install
+	sudo nano /etc/apt/sources.list.d/backports.list
+		add "deb http://cdn.debian.net/debian wheezy-backports main"
+	sudo apt-get update
+    sudo apt-get install haproxy -t wheezy-backports
+
+@ config
+	global
+        log     /dev/log    local0
+        log     /dev/log    local1 notice
+        chroot  /var/lib/haproxy
+        user    haproxy
+        group   haproxy
+        maxconn 1024
+        daemon
+
+	defaults
+	        log     global
+	        mode    http
+	        option  httplog
+	        option  dontlognull
+
+	#
+	#  Listen on *:8080 - Send traffic to the backend named "apache"
+	#
+	frontend www-http
+	    bind *:8080
+	    default_backend apache
+
+	#
+	# Back-end definition.
+	#
+	backend apache
+	    mode http
+	    balance roundrobin
+	    server tomcat-preprod01 127.0.0.1:8181
+	    server tomcat-preprod02 127.0.0.1:8282
+
+@ restarting service 
+	service haproxy restart
 
 
 
