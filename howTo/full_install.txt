@@ -36,7 +36,9 @@ sudo apt-get install openjdk-7-jre default-jre default-jre-headless
 # Tomcat 7
 sudo apt-get install tomcat7
 @ disable tomcat7 service
-	sudo update-rc.d tomcat7 disable (nor working because "using dependency based boot sequencing" ==> asking Franck)
+	sudo update-rc.d tomcat7 disable 
+	@ if not working 
+		sudo update-rc.d tomcat7 remove 
 @ create user directory for tomcat7 user and give him rights
 	sudo mkdir /home/tomcat7
 	sudo chown tomcat7.tomcat7 /home/tomcat7
@@ -92,7 +94,8 @@ tomcat multiple instance ==> follow :
 	sudo cp tomcat7 tomcat7-preprod02
 
 	@ then modify theses lines : ($NAME ==> tomcat-preprod0(1/2))
-		DESC=”Tomcat servlet engine”
+		# Provides:          tomcat7 ==> tomcat-preprod0(1/2)
+		DESC=”Tomcat servlet engine” ==> "Tomcat7 preprod(1/2) ...."
 		CATALINA_BASE=/var/lib/$NAME
 		CATALINA_PID=”/var/run/$NAME.pid”
 
