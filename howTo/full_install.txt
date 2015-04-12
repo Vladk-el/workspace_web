@@ -113,7 +113,7 @@ tomcat multiple instance ==> follow :
 	sudo apt-get update
     sudo apt-get install haproxy -t wheezy-backports
 
-@ config
+@ config /etc/haproxy/haproxy.cfg
 	global
         log     /dev/log    local0
         log     /dev/log    local1 notice
