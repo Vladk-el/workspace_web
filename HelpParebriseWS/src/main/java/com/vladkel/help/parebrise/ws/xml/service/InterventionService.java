@@ -14,14 +14,17 @@ import org.slf4j.LoggerFactory;
 
 import com.vladkel.help.parebrise.ws.model.intervention.DocumentIntervention;
 import com.vladkel.help.parebrise.ws.model.intervention.Intervention;
-import com.vladkel.help.parebrise.ws.persistance.ORMIntervention;
+import com.vladkel.help.parebrise.ws.persistance.ORM;
+import com.vladkel.help.parebrise.ws.persistance.ORMIntervention_old;
 
 @Path("/intervention")
 public class InterventionService {
 	
 	private static final Logger log = LoggerFactory.getLogger(InterventionService.class);
 	
-	private ORMIntervention orm = new ORMIntervention();
+	private static final String matcher = "indice_intervention";
+	
+	private ORM orm = new ORM(Intervention.class, matcher);
 
 	
 	@GET
@@ -29,7 +32,7 @@ public class InterventionService {
 	@Produces("application/xml")
 	public DocumentIntervention getIntervention(@PathParam("id") final int id){
 		DocumentIntervention document = new DocumentIntervention();
-		Intervention intervention = orm.get(id);
+		Intervention intervention = (Intervention) orm.get(id);
 		document.addIntervention(intervention);
 		return document;
 	}
@@ -73,7 +76,7 @@ public class InterventionService {
 	@Path("/getInter/{id}")
 	@Produces("application/xml")
 	public Intervention getInterventionSimple(@PathParam("id") final int id){
-		Intervention intervention = orm.get(id);		
+		Intervention intervention = (Intervention) orm.get(id);		
 		return intervention;
 	}
 		

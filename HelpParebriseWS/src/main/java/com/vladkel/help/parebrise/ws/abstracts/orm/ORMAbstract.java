@@ -20,6 +20,10 @@ public abstract class ORMAbstract <T> {
 	
 	protected Configuration config;
 	
+	protected Class<T> clazz;
+	
+	protected String matcher;
+	
 	public ORMAbstract(){
 		
 		global = new Configuration();

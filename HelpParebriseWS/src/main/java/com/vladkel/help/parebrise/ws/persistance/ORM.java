@@ -13,58 +13,59 @@ import com.vladkel.help.parebrise.ws.abstracts.orm.ORMAbstract;
 import com.vladkel.help.parebrise.ws.model.intervention.Intervention;
 import com.vladkel.help.parebrise.ws.utils.hibernate.InitializeAndUnproxy;
 
-public class ORMIntervention extends ORMAbstract <Intervention> {
+public class ORM<T> extends ORMAbstract<T>{
 
-	public ORMIntervention(){
-		super();
+	public ORM(Class<T> clazz, String matcher){
+		this.clazz = clazz;
+		this.matcher = matcher;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
-	public Intervention get(int id) {
+	public T get(int id) {
 		ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(global.getProperties()).build();
 		SessionFactory sessionFactory = config.buildSessionFactory(serviceRegistry);
 		Session session = sessionFactory.openSession();
-		Intervention intervention = null;
+		T t = null;
 				
 		try {
-			intervention = InitializeAndUnproxy.initializeAndUnproxy(
-							(Intervention) session.load(Intervention.class, new Integer(id))
+			t = InitializeAndUnproxy.initializeAndUnproxy(
+							(T) session.load(clazz, new Integer(id))
 						   );
-			log.info("GET intervention with id " + intervention.getIndice_intervention());
 		} catch(Exception e) {
-			log.error("Error on GET INTERVENTION : ", e);
+			log.error("Error on GET " + clazz.toString() + " : ", e);
 		} finally {
 			session.close();
 		}
 		
 		sessionFactory.close();
-		return intervention;
+		return t;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Intervention> getAll() {
+	public List<T> getAll() {
 		ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(global.getProperties()).build();
 		SessionFactory sessionFactory = config.buildSessionFactory(serviceRegistry);
 		Session session = sessionFactory.openSession();
-		List<Intervention> interventions = null;
+		List<T> list = null;
 		
 		try{
-			interventions = session
-							.createCriteria(Intervention.class)
-							.list();
+			list = session
+						  .createCriteria(Intervention.class)
+						  .list();
 		} catch(Exception e) {
-			log.error("Error on GET ALL INTERVENTIONS : ", e);
+			log.error("Error on GET ALL " + clazz.toString() + " : ", e);
 		} finally {
 			session.close();
 		}
 		
 		sessionFactory.close();
-		return interventions;
+		return list;
 	}
 
 	@Override
-	public boolean add(Intervention intervention) {
+	public boolean add(T object) {
 		ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(global.getProperties()).build();
 		SessionFactory sessionFactory = config.buildSessionFactory(serviceRegistry);
 		Session session = sessionFactory.openSession();
@@ -72,7 +73,7 @@ public class ORMIntervention extends ORMAbstract <Intervention> {
 		
 		try {
 			transaction = session.beginTransaction();
-			session.save(intervention);
+			session.save(object);
 			session.flush();
 			transaction.commit();
 			return true;
@@ -80,7 +81,7 @@ public class ORMIntervention extends ORMAbstract <Intervention> {
 			if(transaction != null){
 				transaction.rollback();
 			}
-			log.error("Error on ADD INTERVENTION : ", e);
+			log.error("Error on ADD " + clazz.toString() + " : ", e);
 		} finally {
 			session.close();
 		}
@@ -90,7 +91,7 @@ public class ORMIntervention extends ORMAbstract <Intervention> {
 	}
 
 	@Override
-	public boolean update(Intervention intervention) {
+	public boolean update(T object) {
 		ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(global.getProperties()).build();
 		SessionFactory sessionFactory = config.buildSessionFactory(serviceRegistry);
 		Session session = sessionFactory.openSession();
@@ -98,7 +99,7 @@ public class ORMIntervention extends ORMAbstract <Intervention> {
 		
 		try {
 			transaction = session.beginTransaction();
-			session.update(intervention);
+			session.update(object);
 			session.flush();
 			transaction.commit();
 			return true;
@@ -106,7 +107,7 @@ public class ORMIntervention extends ORMAbstract <Intervention> {
 			if(transaction != null){
 				transaction.rollback();
 			}
-			log.error("Error on UPDATE INTERVENTION : ", e);
+			log.error("Error on UPDATE " + clazz.toString() + " : ", e);
 		} finally {
 			session.close();
 		}
@@ -121,10 +122,10 @@ public class ORMIntervention extends ORMAbstract <Intervention> {
 		SessionFactory sessionFactory = config.buildSessionFactory(serviceRegistry);
 		Session session = sessionFactory.openSession();
 		Transaction transaction = null;
-		
+				
 		try {
 			transaction = session.beginTransaction();
-			Query query = session.createQuery("delete from Intervention where indice_intervention = :id");
+			Query query = session.createQuery("delete from " + clazz.getSimpleName() + " where " + matcher + " = :id");
 			query.setInteger("id", id);
 			query.executeUpdate();
 			session.flush();
@@ -134,7 +135,7 @@ public class ORMIntervention extends ORMAbstract <Intervention> {
 			if(transaction != null){
 				transaction.rollback();
 			}
-			log.error("Error on REMOVE INTERVENTION : ", e);
+			log.error("Error on REMOVE " + clazz.toString() + " : ", e);
 		} finally {
 			session.close();
 		}
