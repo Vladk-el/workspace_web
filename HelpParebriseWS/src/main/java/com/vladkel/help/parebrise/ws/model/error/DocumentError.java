@@ -1,20 +1,20 @@
-package com.vladkel.help.parebrise.ws.model.intervention;
+package com.vladkel.help.parebrise.ws.model.error;
 
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import com.vladkel.help.parebrise.ws.model.error.XMLError;
 
 import com.vladkel.help.parebrise.ws.abstracts.model.DocumentAbstract;
 
 @XmlRootElement(name = "document")
-public class DocumentIntervention extends DocumentAbstract<Intervention>{
+public class DocumentError extends DocumentAbstract<XMLError>{
 
-	@XmlElementWrapper(name = "interventions")
-	@XmlElement(name = "intervention")
-	public List<Intervention> getInterventions() {
+	@XmlElementWrapper(name = "errors")
+	@XmlElement(name = "error")
+	public List<XMLError> getErrors() {
 		return getObjects();
 	}
-	
 }

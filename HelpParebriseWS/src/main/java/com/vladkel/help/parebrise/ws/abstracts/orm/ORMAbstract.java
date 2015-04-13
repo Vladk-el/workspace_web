@@ -36,7 +36,7 @@ public abstract class ORMAbstract <T> {
 		
 	}
 	
-	public abstract T get(int id);
+	public abstract T get(int id) throws Exception;
 	
 	public abstract List<T> getAll();
 	

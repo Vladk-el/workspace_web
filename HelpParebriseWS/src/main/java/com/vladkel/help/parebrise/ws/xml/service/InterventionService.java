@@ -12,10 +12,12 @@ import org.jboss.resteasy.annotations.Form;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.vladkel.help.parebrise.ws.abstracts.model.DocumentAbstract;
+import com.vladkel.help.parebrise.ws.model.error.DocumentError;
+import com.vladkel.help.parebrise.ws.model.error.XMLError;
 import com.vladkel.help.parebrise.ws.model.intervention.DocumentIntervention;
 import com.vladkel.help.parebrise.ws.model.intervention.Intervention;
 import com.vladkel.help.parebrise.ws.persistance.ORM;
-import com.vladkel.help.parebrise.ws.persistance.ORMIntervention_old;
 
 @Path("/intervention")
 public class InterventionService {
@@ -24,16 +26,26 @@ public class InterventionService {
 	
 	private static final String matcher = "indice_intervention";
 	
-	private ORM orm = new ORM(Intervention.class, matcher);
+	private ORM<Intervention> orm = new ORM<Intervention>(Intervention.class, matcher);
 
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@GET
 	@Path("/get/{id}")
 	@Produces("application/xml")
-	public DocumentIntervention getIntervention(@PathParam("id") final int id){
-		DocumentIntervention document = new DocumentIntervention();
-		Intervention intervention = (Intervention) orm.get(id);
-		document.addIntervention(intervention);
+	public DocumentAbstract getIntervention(@PathParam("id") final int id){
+		DocumentAbstract document;
+		
+		try {
+			document = new DocumentIntervention();
+			Intervention intervention = (Intervention) orm.get(id);
+			document.addObject(intervention);
+		} catch(Exception e) {
+			log.error("Error on GET INTERVENTION : " + e.getClass().getSimpleName());
+			document = new DocumentError();
+			XMLError error = new XMLError(e);
+			document.addObject(error);
+		}
 		return document;
 	}
 	
@@ -43,7 +55,7 @@ public class InterventionService {
 	public DocumentIntervention getInterventions(){
 		DocumentIntervention document = new DocumentIntervention();
 		List<Intervention> interventions = orm.getAll();
-		document.setInterventions(interventions);
+		document.setObjets(interventions);
 		return document;
 	}
 	
@@ -76,7 +88,14 @@ public class InterventionService {
 	@Path("/getInter/{id}")
 	@Produces("application/xml")
 	public Intervention getInterventionSimple(@PathParam("id") final int id){
-		Intervention intervention = (Intervention) orm.get(id);		
+		Intervention intervention = null;
+		
+		try {
+			intervention = (Intervention) orm.get(id);	
+		} catch (Exception e) {
+			
+		}
+			
 		return intervention;
 	}
 		

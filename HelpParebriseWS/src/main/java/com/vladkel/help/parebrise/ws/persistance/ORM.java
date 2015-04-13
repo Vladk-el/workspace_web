@@ -22,7 +22,7 @@ public class ORM<T> extends ORMAbstract<T>{
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public T get(int id) {
+	public T get(int id) throws Exception {
 		ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(global.getProperties()).build();
 		SessionFactory sessionFactory = config.buildSessionFactory(serviceRegistry);
 		Session session = sessionFactory.openSession();
@@ -32,11 +32,13 @@ public class ORM<T> extends ORMAbstract<T>{
 			t = InitializeAndUnproxy.initializeAndUnproxy(
 							(T) session.load(clazz, new Integer(id))
 						   );
-		} catch(Exception e) {
-			log.error("Error on GET " + clazz.toString() + " : ", e);
 		} finally {
 			session.close();
 		}
+		
+		/* catch(Exception e) {
+			log.error("Error on GET " + clazz.toString() + " : ", e);
+		}*/
 		
 		sessionFactory.close();
 		return t;
