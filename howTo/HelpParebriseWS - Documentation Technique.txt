@@ -1,0 +1,117 @@
+#
+# HelpParebriseWS - Documentation technique
+#
+
+1. Tables supportées : 
+	
+	assurance
+	client
+	contact
+	fournisseur
+	intervention
+	mode_paiement
+	photos_intervention
+	piece
+	piece_intervention
+	prestation
+	stock
+	tva
+	vehicule
+
+
+2. Type de données retournées et type de web service
+	
+	type de données      : XML
+	méthode de connexion : rest
+
+
+3. Document de réponse
+
+	3.1 Structure
+
+		<document>
+			<status></status>
+			<comment></comment>
+			<size></size>
+			<$OBJECTS>
+				<$OBJECT></$OBJECT>
+			</$OBJECTS>
+		</document>
+
+	3.2. Détail
+
+		document : Racine du document XML.
+		status   : Statut de la réponse [ok / nok].
+		comment  : Commentaire lié à la réponse, utilisé en cas de problèmes ou de cas spéciaux, non visible dans la plupart des cas.
+		$OBJECTS : Racine de la liste des objets spécifiés ( == Nom de la table + 's').
+		$OBJECT  : Object de la liste retournée par le web sevice ( == Nom de la table).
+
+
+4. Document de réponse d'erreur
+
+	4.1 Structure
+
+		<document>
+			<status></status>
+			<comment></comment>
+			<size></size>
+			<errors>
+				<error>
+					<exceptionName></exceptionName>
+					<exceptionMessage></exceptionMessage>
+					<exceptionStackTrace></exceptionStackTrace>
+				</error>
+			</errors>
+		</document>
+
+	4.2. Détail
+
+		document            : Racine du document XML.
+		status              : Statut de la réponse [nok].
+		comment             : Commentaire lié à la réponse [A problem has occurred.].
+		errors              : Racine de la liste des erreurs retournées.
+		error               : Erreur retournée par le web sevice.
+		exceptionName       : Nom de l'exception levée.
+		exceptionMessage    : Explication sur l'exception levée.
+		exceptionStackTrace : Trace complète de l'exception levée.
+
+
+5. Accéder au WS
+
+	5.1. Url de base
+
+		url : http://92.222.162.33:8080/HelpParebriseWS/rest/
+
+	5.1. SELECT
+
+		Utilisation : Renvoi un élément de la table demandée grace à l'id passé en paramètre.
+
+		url : http://92.222.162.33:8080/HelpParebriseWS/rest/${table}/get/${id}
+
+	5.2. SELECT ALL
+
+		Utilisation : Renvoi tous les éléments de la table demandée.
+
+		url : http://92.222.162.33:8080/HelpParebriseWS/rest/${table}/get/all
+
+	5.3. SELECT BY FIELD
+
+		Utilisation : Renvoi les éléments de la table demandée en fonction des critères passés dans l'url (possibilité de mettre plusieurs critères).
+
+		url : http://92.222.162.33:8080/HelpParebriseWS/rest/${table}/get/by/fields?${param}=${param_value}[&.......]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
