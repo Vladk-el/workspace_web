@@ -30,8 +30,9 @@ java -version
 sudo apt-get install default-jdk
 if(java -version)
 	==> java 6
-sudo apt-get remove openjdk-6-jre default-jre default-jre-headless
-sudo apt-get install openjdk-7-jre default-jre default-jre-headless
+	sudo apt-get remove openjdk-6-jre default-jre default-jre-headless
+	sudo apt-get install openjdk-7-jre openjdk-7-jdk default-jre default-jre-headless
+	sudo update-alternatives --config java
 
 # Tomcat 7
 sudo apt-get install tomcat7
@@ -53,9 +54,9 @@ tomcat multiple instance ==> follow :
 	sudo mkdir tomcat7-preprod01
 	sudo mkdir tomcat7-preprod02
 	cd /var/lib/tomcat7-preprod01/
-	mkdir mkdir conf temp webapps work logs
+	mkdir conf temp webapps work logs
 	cd /var/lib/tomcat7-preprod02/
-	mkdir mkdir conf temp webapps work logs
+	mkdir conf temp webapps work logs
 	cd /var/lib/
 	udo chown -R tomcat7:tomcat7 tomcat7-preprod01 tomcat7-preprod02
 
@@ -81,12 +82,12 @@ tomcat multiple instance ==> follow :
 		tomcat-preprod01 : 
 			8105
 			8181 ==> 8444
-			8109
+			8109 ==> 8444
 
 		tomcat-preprod02 : 
 			8205
 			8282 ==> 8445
-			8209
+			8209 ==> 8445
 
 @ add services
 	cd /etc/init.d/
@@ -100,8 +101,8 @@ tomcat multiple instance ==> follow :
 		CATALINA_PID=”/var/run/$NAME.pid”
 
 @ update services as startup services
-	sudo update -rc.d tomcat7-preprod01 defaults
-	sudo update -rc.d tomcat7-preprod02 defaults
+	sudo update-rc.d tomcat7-preprod01 defaults
+	sudo update-rc.d tomcat7-preprod02 defaults
 
 # Load balancing
 	https://www.debian-administration.org/article/709/Using_the_haproxy_load-balancer_for_increased_availability => THIS ONE
@@ -148,6 +149,23 @@ tomcat multiple instance ==> follow :
 @ restarting service 
 	service haproxy restart
 
+
+# Deploy war
+
+	@ stop server 1
+		sudo service tomcat7-prod01 stop
+	@ remove old wars and folders
+		rm -rf /var/lib/tomcat7-prod01/webapps/
+	@ copy new war into server
+		sudo cp HelpParebriseWS-2015-04-19_23-12.war /var/lib/tomcat7-prod01/webapps/HelpParebriseWS.war
+	@ watch logs before and during application deployement	
+		tail -f /var/lib/tomcat7-prod01/logs/catalina.out 
+	@ restart server 1
+		sudo service tomcat7-prod01 start
+	@ test WS (only for HelpParebriseWS)
+		curl localhost:8181/HelpParebriseWS/rest/intervention/get/78
+
+	@ same for server 2
 
 
 
