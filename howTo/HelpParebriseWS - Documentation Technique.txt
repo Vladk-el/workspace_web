@@ -1,6 +1,6 @@
 #
 # HelpParebriseWS - Documentation technique
-# Version 1.0
+# Version 1.1
 # Eliott Laversin
 #
 
@@ -97,7 +97,7 @@
 		exceptionStackTrace : Trace complète de l'exception levée.
 
 
-5. Accéder au WS
+5. Accéder au WS (prod && demo)
 
 	5.1. Url de base
 
@@ -107,37 +107,43 @@
 
 		Utilisation : Renvoi un élément de la table spécifiée grace à l'id passé en paramètre.
 
-		url : http://92.222.162.33:8080/HelpParebriseWS/rest/${table}/get/${id}
+		url  : http://92.222.162.33:8080/HelpParebriseWS/rest/${table}/get/${id}
+		demo : http://92.222.162.33:8080/HelpParebriseWS/rest/${table}/get/${id}/demo
 
 	5.3. SELECT BY FIELD
 
 		Utilisation : Renvoi les éléments de la table spécifiée en fonction des critères passés dans l'url (possibilité de mettre plusieurs critères).
 
-		url : http://92.222.162.33:8080/HelpParebriseWS/rest/${table}/get/by/fields?${param}=${param_value}[&.......]
+		url  : http://92.222.162.33:8080/HelpParebriseWS/rest/${table}/get/by/fields?${param}=${param_value}[&.......]
+		demo : http://92.222.162.33:8080/HelpParebriseWS/rest/${table}/get/by/fields/demo?${param}=${param_value}[&.......]
 
 	5.4. SELECT ALL
 
 		Utilisation : Renvoi tous les éléments de la table spécifiée.
 
-		url : http://92.222.162.33:8080/HelpParebriseWS/rest/${table}/get/all
+		url  : http://92.222.162.33:8080/HelpParebriseWS/rest/${table}/get/all
+		demo : http://92.222.162.33:8080/HelpParebriseWS/rest/${table}/get/all/demo
 
 	5.5. INSERT
 
 		Utilisation : Réalise un insert dans la base. Tous les champs de la table doivent absolument être passés en paramètre.
 
-		url : http://92.222.162.33:8080/HelpParebriseWS/rest/${table}/set/add?${fields=value}
+		url  : http://92.222.162.33:8080/HelpParebriseWS/rest/${table}/set/add?${fields=value}
+		demo : http://92.222.162.33:8080/HelpParebriseWS/rest/${table}/set/add/demo?${fields=value}
 
 	5.6. UPDATE
 
 		Utilisation : Réalise un insert dans la base. Tous les champs de la table doivent absolument être passés en paramètre.
 
-		url : http://92.222.162.33:8080/HelpParebriseWS/rest/${table}/set/update?${fields=value}
+		url  : http://92.222.162.33:8080/HelpParebriseWS/rest/${table}/set/update?${fields=value}
+		demo : http://92.222.162.33:8080/HelpParebriseWS/rest/${table}/set/update/demo?${fields=value}
 
 	5.7. DELETE
 
 		Utilisation : Supprime un élément de la table spécifiée grace à l'id passé en paramètre.
 
-		url : http://92.222.162.33:8080/HelpParebriseWS/rest/${table}/set/are/you/sure/that/you/really/want/to/remove/this/object/${id}
+		url  : http://92.222.162.33:8080/HelpParebriseWS/rest/${table}/set/are/you/sure/that/you/really/want/to/remove/this/object/${id}
+		demo : http://92.222.162.33:8080/HelpParebriseWS/rest/${table}/set/are/you/sure/that/you/really/want/to/remove/this/object/${id}/demo
 
 
 
