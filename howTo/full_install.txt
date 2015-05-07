@@ -169,6 +169,25 @@ tomcat multiple instance ==> follow :
 
 
 
+# How to execute a daily script
+
+	1. make a script
+
+		@ python script to save mysql db : 
+			see backup.py
+
+	2. add execution right
+
+	3. copy it to the /ect/cron.daily/ directory
+
+	4. remove extension to you script
+
+	5. restart service cron : sudo service cron restart
+
+	6. look if cron detect your script : run-parts --list /etc/cron.daily
+
+	7. enjoy ;)
+
 
 
 
