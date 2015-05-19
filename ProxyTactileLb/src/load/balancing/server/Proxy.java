@@ -1,6 +1,5 @@
 package load.balancing.server;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
@@ -8,12 +7,17 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import load.balancing.server.strategy.Strategy;
+import load.balancing.server.strategy.round.robin.Robin;
+import load.balancing.server.strategy.round.robin.RoundRobin;
 
 
 public class Proxy {
@@ -21,6 +25,8 @@ public class Proxy {
 	private Map<Integer, Map<String, String>> workers;
 		
 	private Map<Integer, Map<String, String>> loadBalancers;
+	
+	private Map<Integer, Strategy> strategies;
 
 	public Proxy() {
 		init();
@@ -32,6 +38,7 @@ public class Proxy {
 		BufferedReader br = null;
 		workers = new HashMap<Integer, Map<String,String>>();
 		loadBalancers = new HashMap<Integer, Map<String,String>>();
+		strategies = new HashMap<Integer, Strategy>();
 		
 		try {
 			br = new BufferedReader(new InputStreamReader(new FileInputStream("config.ini")));
@@ -64,6 +71,18 @@ public class Proxy {
 					}
 					else if(key.endsWith("strategy")){
 						loadBalancers.get(id).put("strategy", value);
+						
+						if(strategies.get(id) == null){
+							switch (value) {
+								case "round_robin":
+									strategies.put(id, new RoundRobin());
+									break;
+	
+								default:
+									break;
+							}
+						}
+						
 					}
 					
 				}
@@ -75,7 +94,24 @@ public class Proxy {
 			e.printStackTrace();
 		}
 		
+		/**
+		 * Strategy
+		 */
 		
+		for(Integer key : strategies.keySet()){
+			if(strategies.get(key) instanceof RoundRobin){
+				List<Robin> robins = new ArrayList<>();
+				String [] tab = loadBalancers.get(key).get("workers").split(",");
+				for(String str : tab){
+					robins.add(new Robin(Integer.parseInt(str)));
+				}
+				strategies.get(key).setList(robins);
+			}
+			
+		}
+		
+		
+				
 		System.out.println("workers : ");
 		for(Integer key : workers.keySet()){
 			System.out.println("\t" + key + 
@@ -109,7 +145,9 @@ public class Proxy {
 				try {
 					client = server.accept();
 					System.out.println("client " + client + " connected");
-					balance(client, 1);
+					System.out.println("worker " + strategies.get(0).next());
+					//balance(client, 1);
+					//balance(client, strategies.get(0).next());
 				} catch(Exception e){
 					System.out.println(e);
 				} finally {
