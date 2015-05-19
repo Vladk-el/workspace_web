@@ -10,14 +10,18 @@ import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.ReadOnlyBufferException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import load.balancing.server.request.Request;
 import load.balancing.server.strategy.Strategy;
 import load.balancing.server.strategy.round.robin.Robin;
-import load.balancing.server.strategy.round.robin.RoundRobin;
+import load.balancing.server.strategy.round.robin.StrategyRoundRobin;
+import load.balancing.server.strategy.stiky.session.StikySession;
+import load.balancing.server.strategy.stiky.session.StrategyStikySession;
 
 
 public class Proxy {
@@ -27,6 +31,8 @@ public class Proxy {
 	private Map<Integer, Map<String, String>> loadBalancers;
 	
 	private Map<Integer, Strategy> strategies;
+	
+	private Map<String, Integer> stikies;
 
 	public Proxy() {
 		init();
@@ -39,6 +45,7 @@ public class Proxy {
 		workers = new HashMap<Integer, Map<String,String>>();
 		loadBalancers = new HashMap<Integer, Map<String,String>>();
 		strategies = new HashMap<Integer, Strategy>();
+		stikies = new HashMap<String, Integer>();
 		
 		try {
 			br = new BufferedReader(new InputStreamReader(new FileInputStream("config.ini")));
@@ -75,14 +82,21 @@ public class Proxy {
 						if(strategies.get(id) == null){
 							switch (value) {
 								case "round_robin":
-									strategies.put(id, new RoundRobin());
+									strategies.put(id, new StrategyRoundRobin());
 									break;
 	
+								case "stiky_session":
+									strategies.put(id, new StrategyStikySession());
+									break;
+									
 								default:
 									break;
 							}
 						}
 						
+					}
+					else if(key.endsWith("domain")){
+						loadBalancers.get(id).put("domain", value);
 					}
 					
 				}
@@ -99,7 +113,7 @@ public class Proxy {
 		 */
 		
 		for(Integer key : strategies.keySet()){
-			if(strategies.get(key) instanceof RoundRobin){
+			if(strategies.get(key) instanceof StrategyRoundRobin){
 				List<Robin> robins = new ArrayList<>();
 				String [] tab = loadBalancers.get(key).get("workers").split(",");
 				for(String str : tab){
@@ -107,6 +121,15 @@ public class Proxy {
 				}
 				strategies.get(key).setList(robins);
 			}
+			else if(strategies.get(key) instanceof StrategyStikySession){
+				List<Integer> list = new ArrayList<>();
+				String [] tab = loadBalancers.get(key).get("workers").split(",");
+				for(String str : tab){
+					list.add(Integer.parseInt(str));
+				}
+				((StrategyStikySession) strategies.get(key)).setWorkers(list);
+			}
+			
 			
 		}
 		
@@ -145,18 +168,53 @@ public class Proxy {
 				try {
 					client = server.accept();
 					System.out.println("client " + client + " connected");
-					System.out.println("worker " + strategies.get(0).next());
-					//balance(client, 1);
-					//balance(client, strategies.get(0).next());
+					
+					/*
+					 * Request
+					 */
+					//System.out.println("before request");
+					Request r = new Request(client);
+					
+					Integer current_lb = null;
+					
+					for(Integer key : loadBalancers.keySet()){
+						if(loadBalancers.get(key).get("domain").contains(r.getHost())){
+							current_lb = key;
+						}
+					}
+					
+					if(current_lb != null && r.getHeader() != null){
+						//System.out.println("after request");
+						if(strategies.get(current_lb) instanceof StrategyStikySession){
+							
+							System.out.println("IS StrategyStikySession");
+							
+							StikySession ss = new StikySession(r.getUserAgent(), client.getInetAddress().getHostAddress(), null);
+							
+							//System.out.println(ss.toString());
+							
+							((StrategyStikySession) strategies.get(current_lb)).setCurrent(ss);
+						}
+						
+						int theGoodOne = strategies.get(current_lb).getTheGoodOne();
+						
+						System.out.println("theGoodOne : " + theGoodOne);
+						
+						balance(r, theGoodOne);
+						
+						System.out.println("strategies.get(current_lb).getTheGoodOne() ok");
+					}
+					
 				} catch(Exception e){
-					System.out.println(e);
+					e.printStackTrace();
 				} finally {
 					System.out.println("client " + client + " disconnected");
 					client.close();
+					System.out.println();
 				}
 			}
 		} catch(Exception e){
-			System.out.println(e);
+			e.printStackTrace();
 		} finally {
 			if(server != null){
 				try {
@@ -169,14 +227,14 @@ public class Proxy {
 		}
 	}
 	
-	public void balance(Socket client, Integer server){
+	public void balance(Request request, Integer server){
 		Socket socket = null;
 		
 		try {
 			socket = new Socket(workers.get(server).get("ip"), Integer.parseInt(workers.get(server).get("port")));
-			BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
+			//BufferedReader br = new BufferedReader(new InputStreamReader(request.getSocket().getInputStream()));
 			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-			
+			/*
 			String s = "";
 			while(null != (s = br.readLine())){
 				System.out.println(s);
@@ -184,16 +242,21 @@ public class Proxy {
 				if(s.length() == 0)
 					break;
 			}
+			*/
+			
+			for(String str : request.getHeaders()){
+				bw.write(str + System.getProperty("line.separator"));
+			}
 			bw.flush();
 			
 			System.out.println("writing ok");
 			
 			BufferedReader rbr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			BufferedWriter rbw = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+			BufferedWriter rbw = new BufferedWriter(new OutputStreamWriter(request.getSocket().getOutputStream()));
 			
-			s = "";
+			String s = "";
 			while(null != (s = rbr.readLine())){
-				System.out.println("s : ***" + s + "***");
+				//System.out.println("s : ***" + s + "***");
 				rbw.write(s + System.getProperty("line.separator"));
 				if(s.contains(System.getProperty("line.separator"))){
 					if(s.length() == 0){

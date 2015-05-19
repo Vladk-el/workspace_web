@@ -10,7 +10,7 @@ public abstract class Strategy <T> {
 	protected List<T> list;
 	
 	
-	public abstract int next();
+	public abstract int getTheGoodOne();
 	
 	public Iterator<T> getIt() {
 		return it;
@@ -27,5 +27,9 @@ public abstract class Strategy <T> {
 	public void setList(List<T> list) {
 		this.list = list;
 		it = list.iterator();
+	}
+	
+	public void addObjectToList(T object){
+		getList().add(object);
 	}
 }

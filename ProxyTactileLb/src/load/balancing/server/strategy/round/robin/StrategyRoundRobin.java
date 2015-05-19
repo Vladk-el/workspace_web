@@ -4,19 +4,19 @@ import java.util.List;
 
 import load.balancing.server.strategy.Strategy;
 
-public class RoundRobin extends Strategy<Robin> {
+public class StrategyRoundRobin extends Strategy<Robin> {
 	
-	public RoundRobin(){
+	public StrategyRoundRobin(){
 		super();
 	}
 	
-	public RoundRobin(List<Robin> list){
+	public StrategyRoundRobin(List<Robin> list){
 		this.list = list;
 		it = list.iterator();
 	}
 	
 	@Override
-	public int next(){
+	public int getTheGoodOne(){
 		if(!it.hasNext()){
 			it = list.iterator();
 		}
