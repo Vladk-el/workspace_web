@@ -9,9 +9,7 @@ import load.balancing.server.strategy.Strategy;
 public class StrategyStikySession extends Strategy<StikySession> {
 	
 	private StikySession current;
-	
-	private List<Integer> workers;
-	
+		
 	public StrategyStikySession() {
 		super();
 		setList(new ArrayList<StikySession>());
@@ -58,13 +56,21 @@ public class StrategyStikySession extends Strategy<StikySession> {
 	public void setCurrent(StikySession current) {
 		this.current = current;
 	}
-
-	public List<Integer> getWorkers() {
-		return workers;
-	}
-
-	public void setWorkers(List<Integer> workers) {
-		this.workers = workers;
+	
+	@Override
+	public void removeWorker(Integer worker){
+		super.removeWorker(worker);
+		
+		List<StikySession> toRemove = new ArrayList<StikySession>();
+		for(StikySession ss : list){
+			if(ss.getServer() == worker){
+				toRemove.add(ss);
+			}
+		}
+		
+		for(StikySession ss : toRemove){
+			list.remove(ss);
+		}
 	}
 
 }

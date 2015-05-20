@@ -9,6 +9,8 @@ public abstract class Strategy <T> {
 	
 	protected List<T> list;
 	
+	protected List<Integer> workers;
+	
 	
 	public abstract int getTheGoodOne();
 	
@@ -31,5 +33,17 @@ public abstract class Strategy <T> {
 	
 	public void addObjectToList(T object){
 		getList().add(object);
+	}
+	
+	public List<Integer> getWorkers() {
+		return workers;
+	}
+
+	public void setWorkers(List<Integer> workers) {
+		this.workers = workers;
+	}
+	
+	public void removeWorker(Integer worker){
+		workers.remove(worker);
 	}
 }
