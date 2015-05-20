@@ -4,10 +4,11 @@ import com.vladkel.thread.pool.interfaces.IPool;
 
 public class Pool implements IPool {
 
+	private static final String DEFAUL_NAME = "worker_";
 	
 	public Pool(int workersNumber){
 		for(int i = 0; i < workersNumber; i++){
-			workers.add(new Worker(this));
+			workers.add(new Worker(this, DEFAUL_NAME + i));
 			workers.get(i).start();
 		}
 	}
@@ -18,7 +19,7 @@ public class Pool implements IPool {
 	}
 
 	@Override
-	public Runnable nextJob() {
+	public synchronized Runnable nextJob() {
 		return this.circularlist.remove(0).getJob();
 	}
 
