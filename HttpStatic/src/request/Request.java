@@ -70,7 +70,7 @@ public class Request {
 			setWriter(new DataOutputStream(socket.getOutputStream()));
 						
 		} catch(Exception e){
-			System.out.println(e);
+			e.printStackTrace();
 		}
 		
 	}

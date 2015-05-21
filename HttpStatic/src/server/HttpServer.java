@@ -14,12 +14,16 @@ import java.util.Map;
 
 import request.Request;
 import request.SessionRequest;
+import session.ISession;
+import session.Session;
 
 public class HttpServer {
 	
 	private Map<String, Map<String, String>> properties;
 	
 	private Map<String, String> sessionProperties;
+	
+	private Map<String, ISession> sessions;
 
 	public HttpServer() {
 		init();
@@ -31,6 +35,7 @@ public class HttpServer {
 		BufferedReader br = null;
 		properties = new HashMap<String, Map<String,String>>();
 		sessionProperties = new HashMap<String, String>();
+		sessions = new HashMap<String, ISession>();
 		
 		try {
 			br = new BufferedReader(new InputStreamReader(new FileInputStream("config.ini")));
@@ -97,14 +102,14 @@ public class HttpServer {
 					System.out.println("client " + client + " connected");
 					handle(client);
 				} catch(Exception e){
-					System.out.println(e);
+					e.printStackTrace();
 				} finally {
 					System.out.println("client " + client + " disconnected");
 					client.close();
 				}
 			}
 		} catch(Exception e){
-			System.out.println(e);
+			e.printStackTrace();
 		} finally {
 			if(server != null){
 				try {
@@ -123,42 +128,68 @@ public class HttpServer {
 		execute(request);
 	}
 	
-	// TODO
+	// TODO local
 	public void manageSession(Request request){
 		Socket socket = null;
 		
-		try {
-			socket = new Socket(sessionProperties.get("ip"), Integer.parseInt(sessionProperties.get("port")));
+		String key = request.getUserAgent() + "|" + request.getSocket().getInetAddress().getHostAddress();
+		
+		if(sessionProperties.get("mode").equalsIgnoreCase("local")) {
 			
-			OutputStream bw = socket.getOutputStream();
+			SessionRequest sessionRequest = new SessionRequest();
 			
-			String key = request.getUserAgent() + "|" + request.getSocket().getInetAddress().getHostAddress();
 			
-			bw.write(("SESSION_KEY=" + key + System.getProperty("line.separator")).getBytes());
-			bw.write(("SESSION_PROPERTY=key1:1" + System.getProperty("line.separator")).getBytes());
-			bw.write(("SESSION_PROPERTY=key2:2" + System.getProperty("line.separator")).getBytes());
-			bw.write(("SESSION_PROPERTY=key3:3" + System.getProperty("line.separator")).getBytes());
+			// TODO NON TESTé
 			
-			bw.write(("__END__" + System.getProperty("line.separator")).getBytes());
-
+			sessionRequest.setKey(key);
+			sessionRequest.getAttributes().put("local1", "1");
+			sessionRequest.getAttributes().put("local2", "2");
+			sessionRequest.getAttributes().put("local3", "3");
+			sessionRequest.getAttributes().put("local4", "4");
 			
-			bw.flush();
 			
-			SessionRequest sessionRequest = new SessionRequest(socket);
+			addSession(sessionRequest.getKey());
+			for(String str : sessionRequest.getAttributes().keySet()){
+				putAttribute(sessionRequest.getKey(), str, sessionRequest.getAttributes().get(str));
+			}
 			
-			System.out.println(sessionRequest); 
+			System.out.println("local session added : " + sessionRequest);
 			
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
+			
+		}
+		else if(sessionProperties.get("mode").equalsIgnoreCase("remote")) {
 			try {
-				if(socket != null){
-					socket.close();
-				}
+				socket = new Socket(sessionProperties.get("ip"), Integer.parseInt(sessionProperties.get("port")));
+				
+				OutputStream bw = socket.getOutputStream();
+				
+				bw.write(("SESSION_KEY=" + key + System.getProperty("line.separator")).getBytes());
+				bw.write(("SESSION_PROPERTY=key1:1" + System.getProperty("line.separator")).getBytes());
+				bw.write(("SESSION_PROPERTY=key2:2" + System.getProperty("line.separator")).getBytes());
+				bw.write(("SESSION_PROPERTY=key3:3" + System.getProperty("line.separator")).getBytes());
+				
+				bw.write(("__END__" + System.getProperty("line.separator")).getBytes());
+
+				
+				bw.flush();
+				
+				SessionRequest sessionRequest = new SessionRequest(socket);
+				
+				System.out.println(sessionRequest); 
+				
 			} catch (IOException e) {
 				e.printStackTrace();
+			} finally {
+				try {
+					if(socket != null){
+						socket.close();
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
+		
 	}
 	
 	@SuppressWarnings("unused")
@@ -168,7 +199,7 @@ public class HttpServer {
 		try{
 			file = new File(properties.get(request.getHost()).get("document_root") + request.getRelativeUrl());
 		}catch(Exception e){
-			System.out.println(e);
+			e.printStackTrace();
 		}
 		
 		if(file.exists()){
@@ -209,7 +240,7 @@ public class HttpServer {
 					
 				}
 			} catch(Exception e){
-				System.out.println(e);
+				e.printStackTrace();
 			}
 		} 
 		else {
@@ -220,6 +251,33 @@ public class HttpServer {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	
+	/**
+	 * For local sessions only
+	 */
+	
+	public void addSession(String key){		
+		if(sessions.get(key) == null){
+			sessions.put(key, new Session());
+		}
+	}
+	
+	public void putAttribute(String key, String attribute, Object value){
+		if(sessions.get(key) != null){
+			sessions.get(key).setAttribute(attribute, value);
+		}
+	}
+	
+	public ISession getSession(String key){
+		return (sessions.get(key) != null) ? sessions.get(key) : null;
+	}
+	
+	
+
+	public Map<String, ISession> getSessions() {
+		return sessions;
 	}
 	
 }

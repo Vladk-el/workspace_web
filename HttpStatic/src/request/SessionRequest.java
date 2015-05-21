@@ -15,6 +15,11 @@ public class SessionRequest {
 	private Map<String, String> attributes;
 	
 	
+	public SessionRequest(){
+		attributes = new HashMap<String, String>();
+	}
+	
+	
 	public SessionRequest(Socket socket){
 		setSocket(socket);
 		init();
