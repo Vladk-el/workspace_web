@@ -131,12 +131,13 @@ public class HttpServer {
 	// TODO local
 	public void manageSession(Request request){
 		Socket socket = null;
+		SessionRequest sessionRequest = null;
 		
 		String key = request.getUserAgent() + "|" + request.getSocket().getInetAddress().getHostAddress();
 		
 		if(sessionProperties.get("mode").equalsIgnoreCase("local")) {
 			
-			SessionRequest sessionRequest = new SessionRequest();
+			sessionRequest = new SessionRequest();
 			
 			
 			// TODO NON TESTé
@@ -173,7 +174,7 @@ public class HttpServer {
 				
 				bw.flush();
 				
-				SessionRequest sessionRequest = new SessionRequest(socket);
+				sessionRequest = new SessionRequest(socket);
 				
 				System.out.println(sessionRequest); 
 				
@@ -189,6 +190,8 @@ public class HttpServer {
 				}
 			}
 		}
+		
+		request.setSessionRequest(sessionRequest);
 		
 	}
 	
@@ -210,7 +213,8 @@ public class HttpServer {
 				
 				if(file.isDirectory()){
 					request.getWriter().writeBytes("HTTP/1.1 200 OK\r\n");
-					request.getWriter().writeBytes("Content-Type: text/html\r\n\r\n");
+					request.getWriter().writeBytes("Content-Type: text/html\r\n");
+					request.getWriter().writeBytes("Set-Cookie: " + "SESSION_ID" + "=" + request.getSessionRequest().getKey() + "\r\n\r\n");
 					
 					File[] files = file.listFiles();
 					//System.out.println("\tsize : " + files.length);
@@ -228,6 +232,7 @@ public class HttpServer {
 				if(file.isFile()){
 					request.getWriter().writeBytes("HTTP/1.1 200 OK\r\n");
 					request.getWriter().writeBytes("Content-Type: octet/stream\r\n\r\n");
+					request.getWriter().writeBytes("Set-Cookie: " + "SESSION_ID" + "=" + request.getSessionRequest().getKey() + "\r\n\r\n");
 					
 					FileInputStream in = new FileInputStream(file);
 					byte[] buffer = new byte[4096];

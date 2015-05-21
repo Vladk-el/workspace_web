@@ -23,6 +23,8 @@ public class Request {
 	
 	private List<String> headers;
 	
+	private SessionRequest sessionRequest;
+	
 	
 	public Request(Socket socket){
 		setSocket(socket);
@@ -129,6 +131,14 @@ public class Request {
 
 	public void setHeaders(List<String> headers) {
 		this.headers = headers;
+	}
+
+	public SessionRequest getSessionRequest() {
+		return sessionRequest;
+	}
+
+	public void setSessionRequest(SessionRequest sessionRequest) {
+		this.sessionRequest = sessionRequest;
 	}
 
 }
