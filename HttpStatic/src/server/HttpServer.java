@@ -6,16 +6,20 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
 import request.Request;
+import request.SessionRequest;
 
 public class HttpServer {
 	
 	private Map<String, Map<String, String>> properties;
+	
+	private Map<String, String> sessionProperties;
 
 	public HttpServer() {
 		init();
@@ -26,6 +30,7 @@ public class HttpServer {
 		
 		BufferedReader br = null;
 		properties = new HashMap<String, Map<String,String>>();
+		sessionProperties = new HashMap<String, String>();
 		
 		try {
 			br = new BufferedReader(new InputStreamReader(new FileInputStream("config.ini")));
@@ -35,13 +40,29 @@ public class HttpServer {
 			String lastKey = null;
 			while(null != (s = br.readLine())){
 				String value = s.split("=")[1];
-				if(s.contains("name")){
-					properties.put(value, new HashMap<>());
-					lastKey = value;
+				if(s.startsWith("domain")){
+					if(s.contains("name")){
+						properties.put(value, new HashMap<>());
+						lastKey = value;
+					}
+					else if(s.contains("document_root")){
+						if(properties.get(lastKey) != null){
+							properties.get(lastKey).put("document_root", value);
+						}
+					}
 				}
-				else if(s.contains("document_root")){
-					if(properties.get(lastKey) != null){
-						properties.get(lastKey).put("document_root", value);
+				else if(s.startsWith("session")){
+					if(s.contains("session.mode")){
+						sessionProperties.put("mode", value);
+					}
+					else if(s.contains("session.timeout")){
+						sessionProperties.put("timeout", value);
+					}
+					else if(s.contains("session.ip")){
+						sessionProperties.put("ip", value);
+					}
+					else if(s.contains("session.port")){
+						sessionProperties.put("port", value);
 					}
 				}
 			}
@@ -98,7 +119,46 @@ public class HttpServer {
 	
 	public void handle(Socket client){
 		Request request = new Request(client);
+		manageSession(request);
 		execute(request);
+	}
+	
+	// TODO
+	public void manageSession(Request request){
+		Socket socket = null;
+		
+		try {
+			socket = new Socket(sessionProperties.get("ip"), Integer.parseInt(sessionProperties.get("port")));
+			
+			OutputStream bw = socket.getOutputStream();
+			
+			String key = request.getUserAgent() + "|" + request.getSocket().getInetAddress().getHostAddress();
+			
+			bw.write(("SESSION_KEY=" + key + System.getProperty("line.separator")).getBytes());
+			bw.write(("SESSION_PROPERTY=key1:1" + System.getProperty("line.separator")).getBytes());
+			bw.write(("SESSION_PROPERTY=key2:2" + System.getProperty("line.separator")).getBytes());
+			bw.write(("SESSION_PROPERTY=key3:3" + System.getProperty("line.separator")).getBytes());
+			
+			bw.write(("__END__" + System.getProperty("line.separator")).getBytes());
+
+			
+			bw.flush();
+			
+			SessionRequest sessionRequest = new SessionRequest(socket);
+			
+			System.out.println(sessionRequest); 
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if(socket != null){
+					socket.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	@SuppressWarnings("unused")
@@ -161,4 +221,5 @@ public class HttpServer {
 			}
 		}
 	}
+	
 }

@@ -17,7 +17,11 @@ public class Request {
 	
 	private String host;
 	
+	private String userAgent;
+	
 	private DataOutputStream writer;
+	
+	private List<String> headers;
 	
 	
 	public Request(Socket socket){
@@ -28,24 +32,43 @@ public class Request {
 	public void init(){
 		try {
 			String s = "";
-			List<String> headers = new ArrayList<>();
+			headers = new ArrayList<>();
 			BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			
 			//System.out.println("... reading request ... ");
 			while( null != (s = br.readLine())){
 				
+				if(s.contains("Host")){
+					setHost(s.replace("Host: ", ""));
+				}
+				else if(s.contains("User-Agent")){
+					setUserAgent(s);
+				}
+				else if(s.contains("HTTP")){
+					setHeader(s);
+				}
+				
 				headers.add(s);
 				if(s.length() == 0)
 					break;
 			}
+			/*
+			System.out.println("HEADERS : ");
+			for(String str : headers){
+				System.out.println("\t" + str);
+			}
+			*/
+			//System.out.println("test header");
 			
-			String [] tab = headers.get(0).split(" ");
+			if(getHeader() != null){
+				String [] tab = getHeader().split(" ");
+				//System.out.println("test header ok");
+				
+				setRelativeUrl(tab[1]);
+			}
 			
-			setHeader(headers.get(0));
-			setRelativeUrl(tab[1]);
-			setHost(headers.get(1).replace("Host: ", ""));
 			setWriter(new DataOutputStream(socket.getOutputStream()));
-			
+						
 		} catch(Exception e){
 			System.out.println(e);
 		}
@@ -84,12 +107,28 @@ public class Request {
 		this.host = host;
 	}
 
+	public String getUserAgent() {
+		return userAgent;
+	}
+
+	public void setUserAgent(String userAgent) {
+		this.userAgent = userAgent;
+	}
+
 	public DataOutputStream getWriter() {
 		return writer;
 	}
 
 	public void setWriter(DataOutputStream writer) {
 		this.writer = writer;
+	}
+
+	public List<String> getHeaders() {
+		return headers;
+	}
+
+	public void setHeaders(List<String> headers) {
+		this.headers = headers;
 	}
 
 }
