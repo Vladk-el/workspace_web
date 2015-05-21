@@ -13,20 +13,10 @@ public class Worker extends Thread {
 
 	@Override
 	public void run() {
-
 		while(true){
-			if(pool.circularlist.getSize() > 0){
-				System.out.println(this.name + " start job");
-				pool.nextJob().run();
-				System.out.println(this.name + " has finished job");
-			} else {
-				System.out.println(name + " is " + this.getState());
-				try {
-					this.sleep(1000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
+			System.out.println(name + " start job");
+			pool.nextJob().run();
+			System.out.println(name + " finish job");
 		}
 	}
 

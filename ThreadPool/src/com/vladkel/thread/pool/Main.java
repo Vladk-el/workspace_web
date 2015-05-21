@@ -10,7 +10,7 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		int workers = 5;
+		int workers = 4;
 
 		Pool pool = new Pool(workers);
 
