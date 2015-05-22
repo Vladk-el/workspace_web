@@ -16,6 +16,7 @@ import request.Request;
 import request.SessionRequest;
 import session.ISession;
 import session.Session;
+import session.SessionKeyGenerator;
 
 public class HttpServer {
 	
@@ -132,8 +133,15 @@ public class HttpServer {
 	public void manageSession(Request request){
 		Socket socket = null;
 		SessionRequest sessionRequest = null;
+		String key = null;
 		
-		String key = request.getUserAgent() + "|" + request.getSocket().getInetAddress().getHostAddress();
+		if(request.getSessionRequest().getKey() != null){
+			key = request.getSessionRequest().getKey();
+		} else {
+			key = SessionKeyGenerator.generateSessionKey();
+		}
+		
+		//String key = request.getUserAgent() + "|" + request.getSocket().getInetAddress().getHostAddress();
 		
 		if(sessionProperties.get("mode").equalsIgnoreCase("local")) {
 			
@@ -284,5 +292,6 @@ public class HttpServer {
 	public Map<String, ISession> getSessions() {
 		return sessions;
 	}
+	
 	
 }

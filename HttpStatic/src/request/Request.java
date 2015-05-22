@@ -49,6 +49,14 @@ public class Request {
 				else if(s.contains("HTTP")){
 					setHeader(s);
 				}
+				else if(s.startsWith("Cookie: ")){
+					if(s.contains("SESSION_ID=")){
+						if(sessionRequest == null){
+							sessionRequest = new SessionRequest();
+							sessionRequest.setKey(s.replace("Cookie: SESSION_ID=", ""));
+						}
+					}
+				}
 				
 				headers.add(s);
 				if(s.length() == 0)
