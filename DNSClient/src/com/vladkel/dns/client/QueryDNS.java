@@ -4,96 +4,117 @@ import java.io.*;
 import java.util.*;
 
 public class QueryDNS {
-  private String queryHost;
-  private int queryType, queryClass, queryID;
-  private static int globalID;
+	
+	private String queryHost;
+	
+	private int queryType, 
+				queryClass, 
+				queryID;
+	
+	private static int id;
+	
+	private boolean authoritative, 
+					truncated, 
+					recursive;
+	
+	
+	public QueryDNS(){
+		super();
+	}
 
-  public QueryDNS (String host, int type, int clas) 
-  {
-	  StringTokenizer labels = new StringTokenizer (host, ".");
-	    while (labels.hasMoreTokens ())
-	      if (labels.nextToken ().length () > 63)
-	        throw new IllegalArgumentException ("Invalid hostname: " + host);
-	    queryHost = host;
-	    queryType = type;
-	    queryClass = clas;
-	    synchronized (getClass ()) {
-	      queryID = (++ globalID) % 65536;
-	    }
-  }
+	public QueryDNS(String host, int type, int clazz) {
+		StringTokenizer labels = new StringTokenizer(host, ".");
+		while (labels.hasMoreTokens())
+			if (labels.nextToken().length() > 63)
+				throw new IllegalArgumentException("Invalid hostname: " + host);
+		queryHost = host;
+		queryType = type;
+		queryClass = clazz;
+		synchronized (getClass()) {
+			queryID = (++id) % 65536;
+		}
+	}
+	
+	
+	public byte[] extractQuery() {
+		ByteArrayOutputStream byteArrayOut = new ByteArrayOutputStream();
+		DataOutputStream dataOut = new DataOutputStream(byteArrayOut);
+		try {
+			
+			// ID
+			dataOut.writeShort(queryID);
+			
+			System.out.println("(0 << DNS.SHIFT_QUERY)" + DNS.SHIFT_QUERY + " : " + (0 << DNS.SHIFT_QUERY));
+			
+			System.out.println("(DNS.OPCODE_QUERY << DNS.SHIFT_OPCODE)" + DNS.OPCODE_QUERY + " ET " + DNS.SHIFT_OPCODE + " : " + (DNS.OPCODE_QUERY << DNS.SHIFT_OPCODE));
+			
+			System.out.println("(1 << DNS.SHIFT_RECURSE_PLEASE)" + DNS.SHIFT_RECURSE_PLEASE + " : " + (1 << DNS.SHIFT_RECURSE_PLEASE));
+			
+			
+			// Flags
+			dataOut.writeShort((0 << DNS.SHIFT_QUERY) // 0 décallé de 15 car REQUETE ==> [0]000 0000 0000 0000
+					| (DNS.OPCODE_QUERY << DNS.SHIFT_OPCODE) // 0 décallé de 11 == > 0000 [0]000 0000 0000
+					| (1 << DNS.SHIFT_RECURSE_PLEASE)); // 1 décallé de 8 ==> 0000 000[1] 0000 0000
+			
+			/**
+			 * ==> [0]000 0000 0000 0000 | 0000 [0]000 0000 0000 | 0000 000[1] 0000 0000 ==> 0000 0001 0000 0000 (256)
+			 */
+			
+			// Questions number
+			dataOut.writeShort(1);
+			
+			// Responses number
+			dataOut.writeShort(0);
+			
+			// Authority RR number
+			dataOut.writeShort(0);
+			
+			// Additionnal RR number
+			dataOut.writeShort(0);
 
-  public String getQueryHost () {
-    return queryHost;
-  }
+			StringTokenizer labels = new StringTokenizer(queryHost, ".");
+			while (labels.hasMoreTokens()) {
+				String label = labels.nextToken();
+				System.out.println("Label : " + label);
+				dataOut.writeByte(label.length());
+				dataOut.writeBytes(label);
+			}
+			
+			dataOut.writeByte(0);
+			dataOut.writeShort(queryType);
+			dataOut.writeShort(queryClass);
+		} catch (IOException ignored) {
+		}
+		return byteArrayOut.toByteArray();
+	}
+	
 
-  public int getQueryType () {
-    return queryType;
-  }
+	public String getQueryHost() {
+		return queryHost;
+	}
 
-  public int getQueryClass () {
-    return queryClass;
-  }
+	public int getQueryType() {
+		return queryType;
+	}
 
-  public int getQueryID () {
-    return queryID;
-  }
+	public int getQueryClass() {
+		return queryClass;
+	}
 
-  public byte[] extractQuery ()
-  {
-    ByteArrayOutputStream byteArrayOut = new ByteArrayOutputStream ();
-    DataOutputStream dataOut = new DataOutputStream (byteArrayOut);
-    try {
-      dataOut.writeShort (queryID);
-      dataOut.writeShort ((0 << DNS.SHIFT_QUERY) |
-              (DNS.OPCODE_QUERY << DNS.SHIFT_OPCODE) |
-              (1 << DNS.SHIFT_RECURSE_PLEASE));
-      dataOut.writeShort (1); // # queries
-      dataOut.writeShort (0); // # answers
-      dataOut.writeShort (0); // # authorities
-      dataOut.writeShort (0); // # additional
-      
-      StringTokenizer labels = new StringTokenizer (queryHost, ".");
-      while (labels.hasMoreTokens ()) {
-        String label = labels.nextToken ();
-        System.out.println("Label : " + label);
-        dataOut.writeByte (label.length ());
-        dataOut.writeBytes (label);
-      }
-      dataOut.writeByte (0);
-      dataOut.writeShort (queryType);
-      dataOut.writeShort (queryClass);
-    } catch (IOException ignored) {
-    }
-    return byteArrayOut.toByteArray ();
-  }
+	public int getQueryID() {
+		return queryID;
+	}
 
-  private Vector answers = new Vector ();
-  private Vector authorities = new Vector ();
-  private Vector additional = new Vector ();
+	public boolean isAuthoritative() {
+		return authoritative;
+	}
 
-  private boolean authoritative, truncated, recursive;
-  
-  public boolean isAuthoritative () {
-    return authoritative;
-  }
+	public boolean isTruncated() {
+		return truncated;
+	}
 
-  public boolean isTruncated () {
-    return truncated;
-  }
-
-  public boolean isRecursive () {
-    return recursive;
-  }
-
-  public Enumeration getAnswers () {
-    return answers.elements ();
-  }
-
-  public Enumeration getAuthorities () {
-    return authorities.elements ();
-  }
-
-  public Enumeration getAdditional () {
-    return additional.elements ();
-  }
+	public boolean isRecursive() {
+		return recursive;
+	}
+	
 }

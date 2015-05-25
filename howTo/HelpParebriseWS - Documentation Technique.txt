@@ -22,6 +22,11 @@
 		5.5. INSERT
 		5.6. UPDATE
 		5.7. DELETE
+	6. Module de statistiques
+		6.1. Présentation
+		6.2. Pièces vendues
+		6.3. Nombre d’interventions par type de véhicule
+		6.4. Nombre d’interventions par client
 
 1. Tables supportées
 	
@@ -150,7 +155,25 @@
 		demo : http://92.222.162.33:8080/HelpParebriseWS/rest/${table}/{key}/set/are/you/sure/that/you/really/want/to/remove/this/object/${id}/demo
 
 
+6. Module de statistiques
 
+	6.1. Présentation
+
+		Ce service a été développé pour répondre aux besoins des clients du côté statistique.
+		Il est accessible comme les autres services directement par url.	
+
+		url de base : http://92.222.162.33:8080/HelpParebriseWS/rest/${table}/${key}/get/
+		${table}    : statistics
+		${key}      : Clé d'accès au web service (pour l'instant "7Lb2JJ8qITmk")
+
+	6.2. Nombre d’interventions par client
+		url : http://92.222.162.33:8080/HelpParebriseWS/rest/${table}/${key}/get/intervention/by/customer/demo
+
+	6.3. Nombre d’interventions par type de véhicule{table}
+		url : http://92.222.162.33:8080/HelpParebriseWS/rest/${table}/${key}/get/intervention/by/vehicle/type/demo
+
+	6.4. Pièces vendues
+		url : http://92.222.162.33:8080/HelpParebriseWS/rest/${table}/${key}/get/pieces/number/demo
 
 
 
