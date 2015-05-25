@@ -178,7 +178,7 @@ tomcat multiple instance ==> follow :
 
 	2. add execution right
 
-	3. copy it to the /ect/cron.daily/ directory
+	3. copy it to the /etc/cron.daily/ directory
 
 	4. remove extension to you script
 
