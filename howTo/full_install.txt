@@ -168,6 +168,17 @@ tomcat multiple instance ==> follow :
 	@ same for server 2
 
 
+# Deploy war [automatic way]
+	@ default location
+		/home/vladk/deploy/
+	@ script name 
+		deploy.sh
+	@ make script executable (if not)
+		sudo chmod +x deploy.sh
+	@ launch script
+		sudo ./deploy.sh WarToDeploy NameYouWantForTheDeployedWar[HelpParebriseWS.war for helparebrise ws] [plateform[default=prod]]
+
+
 
 # How to execute a daily script
 
