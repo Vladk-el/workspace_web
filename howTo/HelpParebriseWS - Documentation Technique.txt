@@ -176,6 +176,28 @@
 		url : http://92.222.162.33:8080/HelpParebriseWS/rest/${table}/${key}/get/pieces/number/demo
 
 
+7. Module de consultation et de gestion de fichiers
+
+	7.1 Présentation
+
+		Ce service a été développé pour pouvoir lister, upload et download des fichiers de tarifs.
+
+		Il est accessible comme les autres services directement par url.	
+
+		url de base : http://92.222.162.33:8080/HelpParebriseWS/rest/${table}/${key}/get
+		${table}    : rate
+		${key}      : Clé d'accès au web service (pour l'instant "7Lb2JJ8qITmk")
+
+	7.2 Get All
+
+		Renvoi comme pour les autres services, une réponse formattée en XML correspondant au shéma classique défini en #4.
+		${url de base}/all/demo
+
+	7.3 Get One
+
+		Renvoi le fichier demandé s'il existe, un fichier vide dans le cas contraire.
+		${url de base}/file/${file name}/demo
+
 
 
 
